@@ -30,7 +30,7 @@ public class Client : MonoBehaviour
 
     private WebSocket ws;
     private readonly Queue<Action> mainThreadActions = new Queue<Action>();
-    public static string token;
+    public string token;
 
     void Awake()
     {
@@ -61,8 +61,11 @@ public class Client : MonoBehaviour
                 var respuesta = JsonUtility.FromJson<TokenResponse>(e.Data);
                 if (!string.IsNullOrEmpty(respuesta.token))
                 {
-                    token = respuesta.token;
-                    Debug.Log("Token guardado: " + token);
+                    mainThreadActions.Enqueue(() =>
+                    {
+                        token = respuesta.token;
+                        Debug.Log("Token guardado: " + token);
+                    });
                 }
             }
             catch (Exception ex)

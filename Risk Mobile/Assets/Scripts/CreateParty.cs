@@ -51,7 +51,7 @@ public class CreateParty : MonoBehaviour
             return;
         }
 
-        if (string.IsNullOrEmpty(Client.token))
+        if (string.IsNullOrEmpty(Client.Instance.token))
         {
             Debug.LogWarning("Token no disponible aún. Espera a que se reciba del servidor.");
             return;
@@ -74,7 +74,7 @@ public class CreateParty : MonoBehaviour
         CreateGameRequest request = new CreateGameRequest
         {
             action = "create",
-            token = Client.token,
+            token = Client.Instance.token,
             info = info
         };
 
