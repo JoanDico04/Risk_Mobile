@@ -23,9 +23,9 @@ public class LoginRequest
 [Serializable]
 public class TokenResponse
 {
+    public string action;
     public string token;
 }
-
 
 public class Client : MonoBehaviour
 {
@@ -38,7 +38,6 @@ public class Client : MonoBehaviour
 
     void Start()
     {
-
         ws = new WebSocket("ws://10.200.1.4:8080");
 
         ws.OnOpen += (sender, e) =>
@@ -53,15 +52,18 @@ public class Client : MonoBehaviour
             try
             {
                 var respuesta = JsonUtility.FromJson<TokenResponse>(e.Data);
-                if (!string.IsNullOrEmpty(respuesta.token))
+
+                if (respuesta.action == "login" && !string.IsNullOrEmpty(respuesta.token))
                 {
                     token = respuesta.token;
-                    Debug.Log("Token guardado: " + token);
+                    Debug.Log("Token guardado correctamente: " + token);
+
+                    mainThreadActions.Enqueue(() => SceneManager.LoadScene(1));
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("No se pudo interpretar el token: " + ex.Message);
+                Debug.LogWarning("Error al procesar la respuesta del servidor: " + ex.Message);
             }
         };
 
@@ -98,11 +100,10 @@ public class Client : MonoBehaviour
             Debug.Log("JSON enviado al servidor: " + json);
             ws.Send(json);
 
-            SceneManager.LoadScene(1);
         }
         else
         {
-            Debug.LogWarning("No hay conexión WebSocket activa. No se cambia de escena.");
+            Debug.LogWarning("No hay conexión WebSocket activa.");
         }
     }
 
@@ -114,6 +115,7 @@ public class Client : MonoBehaviour
             action?.Invoke();
         }
     }
+
     public bool IsConnected()
     {
         return ws != null && ws.IsAlive;
@@ -126,5 +128,4 @@ public class Client : MonoBehaviour
             ws.Send(json);
         }
     }
-
 }

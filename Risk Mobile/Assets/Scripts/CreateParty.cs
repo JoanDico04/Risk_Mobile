@@ -18,7 +18,6 @@ public class CreateGameRequest
     public InfoData info;
 }
 
-
 public class CreateParty : MonoBehaviour
 {
     public TMP_InputField nombrePartidaInput;
@@ -31,7 +30,6 @@ public class CreateParty : MonoBehaviour
     void Start()
     {
         panel.SetActive(false);
-
         client = FindObjectOfType<Client>();
 
         jugadoresDropdown.value = 0;
@@ -83,7 +81,12 @@ public class CreateParty : MonoBehaviour
         client.SendMessageToServer(json);
 
         CerrarPanel();
-
         SceneManager.LoadScene(2);
     }
+
+    public void Tornar()
+    {
+        SceneManager.LoadScene(1);
+    }
 }
+
