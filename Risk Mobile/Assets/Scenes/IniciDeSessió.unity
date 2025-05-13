@@ -1014,8 +1014,8 @@ GameObject:
   - component: {fileID: 694062389}
   - component: {fileID: 694062388}
   - component: {fileID: 694062387}
-  - component: {fileID: 694062386}
   - component: {fileID: 694062390}
+  - component: {fileID: 694062386}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1118,11 +1118,55 @@ MonoBehaviour:
   m_GameObject: {fileID: 694062385}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eab9ae1703240f44580c39a3332f50d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  usuarioInput: {fileID: 51355059}
+  contrasenyaInput: {fileID: 1500672053}
+--- !u!1 &743118990
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 743118992}
+  - component: {fileID: 743118991}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &743118991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743118990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1dbaa1dd0c82c848a264ebd4f8a89d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usuarioInput: {fileID: 0}
-  contrasenyaInput: {fileID: 0}
+--- !u!4 &743118992
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743118990}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 744.84235, y: 534.307, z: -15.217272}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1082040082
 GameObject:
   m_ObjectHideFlags: 0
@@ -1402,7 +1446,6 @@ GameObject:
   - component: {fileID: 1384675572}
   - component: {fileID: 1384675571}
   - component: {fileID: 1384675570}
-  - component: {fileID: 1384675573}
   m_Layer: 5
   m_Name: InciarSessio
   m_TagString: Untagged
@@ -1474,9 +1517,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1384675573}
-        m_TargetAssemblyTypeName: Client, Assembly-CSharp
-        m_MethodName: EnviarMensaje
+      - m_Target: {fileID: 694062390}
+        m_TargetAssemblyTypeName: LoginUI, Assembly-CSharp
+        m_MethodName: OnLoginButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1524,20 +1567,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1384675568}
   m_CullTransparentMesh: 1
---- !u!114 &1384675573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1384675568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1dbaa1dd0c82c848a264ebd4f8a89d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  usuarioInput: {fileID: 51355059}
-  contrasenyaInput: {fileID: 1500672053}
 --- !u!1 &1500672051
 GameObject:
   m_ObjectHideFlags: 0
@@ -1956,3 +1985,4 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 694062389}
   - {fileID: 1082040085}
+  - {fileID: 743118992}

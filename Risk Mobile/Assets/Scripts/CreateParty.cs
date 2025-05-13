@@ -25,13 +25,9 @@ public class CreateParty : MonoBehaviour
     public GameObject panel;
     public GameObject panelDesactivar;
 
-    private Client client;
-
     void Start()
     {
         panel.SetActive(false);
-        client = FindObjectOfType<Client>();
-
         jugadoresDropdown.value = 0;
         jugadoresDropdown.RefreshShownValue();
     }
@@ -49,9 +45,15 @@ public class CreateParty : MonoBehaviour
 
     public void Confirmar()
     {
-        if (client == null || !client.IsConnected())
+        if (Client.Instance == null || !Client.Instance.IsConnected())
         {
             Debug.LogWarning("Cliente no conectado al servidor.");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(Client.token))
+        {
+            Debug.LogWarning("Token no disponible aún. Espera a que se reciba del servidor.");
             return;
         }
 
@@ -72,21 +74,15 @@ public class CreateParty : MonoBehaviour
         CreateGameRequest request = new CreateGameRequest
         {
             action = "create",
-            token = client.token,
+            token = Client.token,
             info = info
         };
 
         string json = JsonUtility.ToJson(request);
         Debug.Log("JSON enviado al servidor (crear partida): " + json);
-        client.SendMessageToServer(json);
+        Client.Instance.SendMessageToServer(json);
 
         CerrarPanel();
         SceneManager.LoadScene(2);
     }
-
-    public void Tornar()
-    {
-        SceneManager.LoadScene(1);
-    }
 }
-

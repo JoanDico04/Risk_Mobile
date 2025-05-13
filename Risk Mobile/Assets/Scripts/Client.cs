@@ -1,10 +1,8 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using WebSocketSharp;
 using System;
 using System.Collections.Generic;
-using TMPro;
+using UnityEngine.SceneManagement;
 
 [Serializable]
 public class LoginData
@@ -23,18 +21,28 @@ public class LoginRequest
 [Serializable]
 public class TokenResponse
 {
-    public string action;
     public string token;
 }
 
 public class Client : MonoBehaviour
 {
-    public TMP_InputField usuarioInput;
-    public TMP_InputField contrasenyaInput;
+    public static Client Instance;
 
     private WebSocket ws;
     private readonly Queue<Action> mainThreadActions = new Queue<Action>();
-    public string token;
+    public static string token;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     void Start()
     {
@@ -48,36 +56,42 @@ public class Client : MonoBehaviour
         ws.OnMessage += (sender, e) =>
         {
             Debug.Log("Mensaje recibido del servidor: " + e.Data);
-
             try
             {
                 var respuesta = JsonUtility.FromJson<TokenResponse>(e.Data);
-
-                if (respuesta.action == "login" && !string.IsNullOrEmpty(respuesta.token))
+                if (!string.IsNullOrEmpty(respuesta.token))
                 {
                     token = respuesta.token;
-                    Debug.Log("Token guardado correctamente: " + token);
-
-                    mainThreadActions.Enqueue(() => SceneManager.LoadScene(1));
+                    Debug.Log("Token guardado: " + token);
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("Error al procesar la respuesta del servidor: " + ex.Message);
+                Debug.LogWarning("No se pudo interpretar el token: " + ex.Message);
             }
         };
 
         ws.Connect();
-        DontDestroyOnLoad(gameObject);
     }
 
-    public void EnviarMensaje()
+    void Update()
     {
-        if (ws != null && ws.IsAlive)
+        while (mainThreadActions.Count > 0)
         {
-            string username = usuarioInput.text;
-            string password = contrasenyaInput.text;
+            var action = mainThreadActions.Dequeue();
+            action?.Invoke();
+        }
+    }
 
+    public bool IsConnected()
+    {
+        return ws != null && ws.IsAlive;
+    }
+
+    public void EnviarMensaje(string username, string password)
+    {
+        if (IsConnected())
+        {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 Debug.LogWarning("Usuario o contraseña vacíos");
@@ -100,25 +114,12 @@ public class Client : MonoBehaviour
             Debug.Log("JSON enviado al servidor: " + json);
             ws.Send(json);
 
+            SceneManager.LoadScene(1);
         }
         else
         {
-            Debug.LogWarning("No hay conexión WebSocket activa.");
+            Debug.LogWarning("No hay conexión WebSocket activa. No se cambia de escena.");
         }
-    }
-
-    void Update()
-    {
-        while (mainThreadActions.Count > 0)
-        {
-            var action = mainThreadActions.Dequeue();
-            action?.Invoke();
-        }
-    }
-
-    public bool IsConnected()
-    {
-        return ws != null && ws.IsAlive;
     }
 
     public void SendMessageToServer(string json)
