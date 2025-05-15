@@ -85,4 +85,15 @@ public class CreateParty : MonoBehaviour
         CerrarPanel();
         SceneManager.LoadScene(2);
     }
+
+    public void Salir()
+    {
+        Application.Quit();
+        Debug.Log("Saliendo del juego...");
+    }
+
+    public void BuscarPartida() 
+    {   
+        SceneManager.LoadScene(5);
+    }
 }
