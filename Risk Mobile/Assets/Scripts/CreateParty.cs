@@ -83,7 +83,7 @@ public class CreateParty : MonoBehaviour
         Client.Instance.SendMessageToServer(json);
 
         CerrarPanel();
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(6);
     }
 
     public void Salir()

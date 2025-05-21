@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Jugar.unity
+- path: Assets/Scenes/ListaPartidas.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

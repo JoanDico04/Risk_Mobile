@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/EsperaCreacioPartida.unity
     guid: 16cfa028e0fdcfd4f924dccdb1ab0d1e
+  - enabled: 1
+    path: Assets/Scenes/ListaPartidas.unity
+    guid: 7e4d8e5cb3e7f1841b99bf673e6270cf
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 8aaf5866784a1fd418e95329d4172ad6, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

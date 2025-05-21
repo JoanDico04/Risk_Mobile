@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using WebSocketSharp;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,42 @@ public class LoginRequest
 [Serializable]
 public class TokenResponse
 {
+    public string message;
     public string token;
+    public int id;
+}
+
+[Serializable]
+public class TokenWrapper
+{
+    public int status;
+    public TokenResponse response;
+}
+
+[Serializable]
+public class SalaData
+{
+    public int id;
+    public string nom;
+    public int max_players;
+    public string date;
+    public string token;
+    public int admin_id;
+    public int connected;
+    public int estat_torn;
+    public int? torn_player_id;
+}
+
+public class SalaWrapper
+{
+    public int status;
+    public LobbyResponse response;
+}
+
+[Serializable]
+public class LobbyResponse
+{
+    public List<SalaData> salas;
 }
 
 public class Client : MonoBehaviour
@@ -31,6 +66,8 @@ public class Client : MonoBehaviour
     private WebSocket ws;
     private readonly Queue<Action> mainThreadActions = new Queue<Action>();
     public string token;
+    public static List<SalaData> SalasRecibidas { get; private set; } = new List<SalaData>();
+    public bool EstaBuscandoPartida = false;
 
     void Awake()
     {
@@ -56,21 +93,44 @@ public class Client : MonoBehaviour
         ws.OnMessage += (sender, e) =>
         {
             Debug.Log("Mensaje recibido del servidor: " + e.Data);
-            try
+
+            if (EstaBuscandoPartida)
             {
-                var respuesta = JsonUtility.FromJson<TokenResponse>(e.Data);
-                if (!string.IsNullOrEmpty(respuesta.token))
+                try
                 {
-                    mainThreadActions.Enqueue(() =>
+                    var lobbyResponse = JsonUtility.FromJson<SalaWrapper>(e.Data);
+                    if (lobbyResponse != null && lobbyResponse.response.salas != null)
                     {
-                        token = respuesta.token;
-                        Debug.Log("Token guardado: " + token);
-                    });
+                        mainThreadActions.Enqueue(() =>
+                        {
+                            SalasRecibidas = lobbyResponse.response.salas;
+                            Debug.Log($"Se recibieron {SalasRecibidas.Count} salas activas.");
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("Error al parsear salas: " + ex.Message);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Debug.LogWarning("No se pudo interpretar el token: " + ex.Message);
+                try
+                {
+                    var loginWrapper = JsonUtility.FromJson<TokenWrapper>(e.Data);
+                    if (loginWrapper != null && loginWrapper.response != null)
+                    {
+                        mainThreadActions.Enqueue(() =>
+                        {
+                            token = loginWrapper.response.token;
+                            Debug.Log("Token guardado desde login: " + token);
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log("Error parseando token login: " + ex.Message);
+                }
             }
         };
 
@@ -97,7 +157,7 @@ public class Client : MonoBehaviour
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                Debug.LogWarning("Usuario o contraseña vacíos");
+                Debug.LogWarning("Usuario o contraseÃ±a vacÃ­os");
                 return;
             }
 
@@ -121,7 +181,7 @@ public class Client : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No hay conexión WebSocket activa. No se cambia de escena.");
+            Debug.LogWarning("No hay conexiÃ³n WebSocket activa. No se cambia de escena.");
         }
     }
 
