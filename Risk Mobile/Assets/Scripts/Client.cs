@@ -63,11 +63,17 @@ public class Client : MonoBehaviour
 {
     public static Client Instance;
 
+    public SalaData salaActual;
+
     private WebSocket ws;
     private readonly Queue<Action> mainThreadActions = new Queue<Action>();
     public string token;
     public static List<SalaData> SalasRecibidas { get; private set; } = new List<SalaData>();
     public bool EstaBuscandoPartida = false;
+
+    public event Action<string> OnServerMessage;
+
+    public event Action<SalaData> OnSalaActualUpdated;
 
     void Awake()
     {
@@ -93,6 +99,39 @@ public class Client : MonoBehaviour
         ws.OnMessage += (sender, e) =>
         {
             Debug.Log("Mensaje recibido del servidor: " + e.Data);
+
+            if (e.Data.Contains("\"action\":\"crear_sala\"") || e.Data.Contains("\"action\":\"unir_sala\""))
+            {
+                try
+                {
+                    var wrapper = JsonUtility.FromJson<SalaWrapper>(e.Data);
+                    if (wrapper != null && wrapper.response != null && wrapper.response.salas != null && wrapper.response.salas.Count > 0)
+                    {
+                        var salaAsignada = wrapper.response.salas[0];
+                        mainThreadActions.Enqueue(() =>
+                        {
+                            salaActual = salaAsignada;
+                            Debug.Log($"Sala asignada: {salaActual.nom} (ID: {salaActual.id})");
+                            OnSalaActualUpdated?.Invoke(salaActual); 
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("Error al asignar salaActual: " + ex.Message);
+                }
+            }
+
+            if (e.Data.Contains("\"action\":\"start_match\""))
+            {
+                Debug.Log("Recibida respuesta de iniciar partida");
+                mainThreadActions.Enqueue(() =>
+                {
+                    SceneManager.LoadScene(2);
+                });
+            }
+
+            OnServerMessage?.Invoke(e.Data);
 
             if (EstaBuscandoPartida)
             {
